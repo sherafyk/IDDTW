@@ -1,6 +1,7 @@
 // Utilities for working with file paths and generating URL friendly slugs.
 const path = require('path');
 const { slugify } = require('transliteration');
+const payload = require('payload');
 
 // Custom AI helpers used to enrich uploaded media with metadata. The service
 // wraps OpenAI calls to produce titles, alt text and tags for a file.
@@ -83,47 +84,56 @@ module.exports = {
       if (operation === 'create' || doc.filename !== previousDoc.filename) {
         const filename = path.basename(doc.filename);
 
-        // Run all AI metadata generation requests in parallel.
-        const [title, altText, tags] = await Promise.all([
-          generateTitle(filename),
-          generateAltText(filename),
-          generateTags(filename),
-        ]);
+        try {
+          // Run all AI metadata generation requests in parallel.
+          const [title, altText, tags] = await Promise.all([
+            generateTitle(filename),
+            generateAltText(filename),
+            generateTags(filename),
+          ]);
 
-        const tagIds = [];
-        for (const tagName of tags) {
-          // Ensure each tag exists only once. We slugify to avoid duplicates
-          // caused by differing cases or whitespace.
-          const slug = slugify(tagName);
-          const existing = await req.payload.find({
-            collection: 'tags',
-            where: { slug: { equals: slug } },
-          });
-          let tagDoc;
-          if (existing && existing.docs && existing.docs.length) {
-            tagDoc = existing.docs[0];
-          } else {
-            // Create the tag if it doesn't already exist.
-            tagDoc = await req.payload.create({
+          const tagIds = [];
+          for (const tagName of tags) {
+            // Ensure each tag exists only once. We slugify to avoid duplicates
+            // caused by differing cases or whitespace.
+            const slug = slugify(tagName);
+            const existing = await req.payload.find({
               collection: 'tags',
-              data: { name: tagName },
+              where: { slug: { equals: slug } },
             });
+            let tagDoc;
+            if (existing && existing.docs && existing.docs.length) {
+              tagDoc = existing.docs[0];
+            } else {
+              // Create the tag if it doesn't already exist.
+              tagDoc = await req.payload.create({
+                collection: 'tags',
+                data: { name: tagName },
+              });
+            }
+            tagIds.push(tagDoc.id);
           }
-          tagIds.push(tagDoc.id);
-        }
 
-        // Update the document with the generated metadata. If any fields were
-        // manually filled out by the user we keep those values instead of the
-        // AI-generated ones.
-        await req.payload.update({
-          collection: 'media-assets',
-          id: doc.id,
-          data: {
-            title: doc.title || title,
-            altText: doc.altText || altText,
-            tags: doc.tags && doc.tags.length ? doc.tags : tagIds,
-          },
-        });
+          // Update the document with the generated metadata. If any fields were
+          // manually filled out by the user we keep those values instead of the
+          // AI-generated ones.
+          await req.payload.update({
+            collection: 'media-assets',
+            id: doc.id,
+            data: {
+              title: doc.title || title,
+              altText: doc.altText || altText,
+              tags: doc.tags && doc.tags.length ? doc.tags : tagIds,
+            },
+          });
+        } catch (err) {
+          if (payload.logger && typeof payload.logger.error === 'function') {
+            payload.logger.error('AI enrichment failed', err);
+          } else {
+            console.error('AI enrichment failed', err);
+          }
+          return;
+        }
       }
     }],
   },
