@@ -61,13 +61,22 @@ module.exports = {
       type: 'text',
     },
     {
-      // Filled in by the API to keep track of which user uploaded the asset.
+      // Relationship to the user who uploaded the asset. Set automatically
+      // in a hook so editors cannot change it manually.
       name: 'uploadedBy',
-      type: 'text',
+      type: 'relationship',
+      relationTo: 'users',
       admin: { readOnly: true },
     },
   ],
   hooks: {
+    // Before saving a new document, record which authenticated user uploaded it.
+    beforeChange: [({ data, req, operation }) => {
+      if (operation === 'create' && req.user) {
+        return { ...data, uploadedBy: req.user.id };
+      }
+      return data;
+    }],
     // After a document is saved, run AI enrichment if the file was newly
     // uploaded or replaced.
     afterChange: [async ({ doc, previousDoc, req, operation }) => {
