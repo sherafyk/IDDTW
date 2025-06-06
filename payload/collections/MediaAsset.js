@@ -71,8 +71,8 @@ module.exports = {
     // After a document is saved, run AI enrichment if the file was newly
     // uploaded or replaced.
     afterChange: [async ({ doc, previousDoc, req, operation }) => {
-      if (operation === 'create' || doc.file !== previousDoc.file) {
-        const filename = path.basename(doc.file.filename || doc.file);
+      if (operation === 'create' || doc.filename !== previousDoc.filename) {
+        const filename = path.basename(doc.filename);
 
         // Run all AI metadata generation requests in parallel.
         const [title, altText, tags] = await Promise.all([
