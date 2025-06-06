@@ -7,6 +7,11 @@ const payload = require('payload');
 // Create the Express app which Payload will hook into.
 const app = express();
 
+// When behind a reverse proxy (e.g. Apache or Nginx) Express needs to trust
+// the proxy headers so secure cookies and protocol information are correct.
+// This ensures Payload works properly when served over HTTPS through a proxy.
+app.set('trust proxy', 1);
+
 const start = async () => {
   // Initialise Payload and connect it to our Express instance.
   await payload.init({
