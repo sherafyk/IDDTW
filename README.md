@@ -20,6 +20,18 @@ This repository provides a dockerized Payload CMS setup with an AI enrichment pi
 2. Access the admin panel at `http://localhost:3000/admin`.
 3. When prompted, create the initial user by entering an email and password.
 
+## Environment Variables
+
+The `.env` file includes:
+
+- `OPENAI_API_KEY` - your OpenAI API key
+- `OPENAI_RETRIES` - number of retry attempts for failed calls (default `3`)
+- `OPENAI_MAX_TOKENS` - max tokens for completion responses (default `60`)
+- `PAYLOAD_SECRET` - Payload authentication secret
+- `MONGODB_URI` - MongoDB connection string
+- `UPLOAD_DIR` - directory for uploaded files
+- `PORT` - port for the Payload server
+
 ## Apache Reverse Proxy Example
 ```apache
 <VirtualHost *:443>
