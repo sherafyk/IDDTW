@@ -4,7 +4,8 @@
   "description": "",
   "main": "payload/server.js",
   "scripts": {
-    "start": "node payload/server.js"
+    "start": "node payload/server.js",
+    "lint": "eslint payload services"
   },
   "keywords": [],
   "author": "",
@@ -16,5 +17,8 @@
     "openai": "^5.1.1",
     "payload": "^3.41.0",
     "transliteration": "^2.3.5"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.1"
   }
 }
