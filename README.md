@@ -7,10 +7,11 @@ This repository provides a dockerized Payload CMS setup with an AI enrichment pi
 - Node.js (for local development)
 
 ## Setup
-1. Clone the repository and copy the example environment file:
+1. Clone the repository and install dependencies:
    ```bash
    git clone <repo_url>
    cd <repo>
+   npm install       # or `pnpm install`
    cp .env.example .env
    # edit .env with your secrets
    npm install
