@@ -31,6 +31,8 @@ The `.env` file includes:
 - `UPLOAD_DIR` - directory for uploaded files
 - `PORT` - port for the Payload server
 
+If `OPENAI_API_KEY` is not provided, the AI enrichment service returns default values without contacting OpenAI (titles and alt text will be `null` and tags will be an empty array).
+
 ## Apache Reverse Proxy Example
 ```apache
 <VirtualHost *:443>
