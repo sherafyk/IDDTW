@@ -88,8 +88,9 @@ for browsing assets from the Payload CMS API. To run the frontend locally:
 
 ```bash
 npm install
-npm run dev
+npm run dev -- -p 3001
 ```
 
 Copy `.env.local.example` to `.env.local` and adjust the `NEXT_PUBLIC_API_BASE_URL`
-if needed. The development server starts on <http://localhost:3000>.
+if needed. The frontend runs on <http://localhost:3001> to avoid the backend
+container on port 3000.

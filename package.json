@@ -8,7 +8,7 @@
     "dev": "next dev",
     "build": "next build",
     "start:frontend": "next start",
-    "lint": "eslint -c .eslintrc.json payload services"
+    "lint": "eslint -c .eslintrc.cjs payload services"
   },
   "keywords": [],
   "author": "",
