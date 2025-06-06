@@ -80,3 +80,16 @@ After the container restarts, Payload will recreate any modified indexes.
 ## License
 
 This project is licensed under the ISC License. See [LICENSE](LICENSE) for details.
+
+## Frontend (Next.js)
+
+The `pages/` and `components/` directories contain a minimal Next.js frontend
+for browsing assets from the Payload CMS API. To run the frontend locally:
+
+```bash
+npm install
+npm run dev
+```
+
+Copy `.env.local.example` to `.env.local` and adjust the `NEXT_PUBLIC_API_BASE_URL`
+if needed. The development server starts on <http://localhost:3000>.
