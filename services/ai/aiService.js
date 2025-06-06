@@ -1,15 +1,12 @@
 // Load the OpenAI API key from the environment
 require('dotenv').config();
-const { Configuration, OpenAIApi } = require('openai');
+const { OpenAI } = require('openai');
 
 // Configure the OpenAI client. Using the SDK keeps our calls concise.
 const openAIKey = process.env.OPENAI_API_KEY;
 let openai;
 if (openAIKey) {
-  const configuration = new Configuration({
-    apiKey: openAIKey,
-  });
-  openai = new OpenAIApi(configuration);
+  openai = new OpenAI({ apiKey: openAIKey });
 } else {
   console.warn('OPENAI_API_KEY not set. AI enrichment disabled.');
 }
@@ -25,13 +22,13 @@ async function callChat(messages, retries = RETRY_LIMIT) {
   }
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      const res = await openai.createChatCompletion({
+      const res = await openai.chat.completions.create({
         model: 'gpt-4o',
         temperature: 0.7,
         max_tokens: MAX_TOKENS,
         messages,
       });
-      return res.data.choices[0].message.content.trim();
+      return res.choices[0].message.content.trim();
     } catch (error) {
       if (attempt === retries) {
         console.error('OpenAI API request failed:', error);
