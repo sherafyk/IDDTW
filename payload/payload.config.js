@@ -1,6 +1,7 @@
 require('dotenv').config();
 const MediaAsset = require('./collections/MediaAsset');
 const Tag = require('./collections/Tag');
+const User = require('./collections/User');
 
 module.exports = {
   serverURL: `http://localhost:${process.env.PORT || 3000}`,
@@ -8,7 +9,7 @@ module.exports = {
     staticURL: '/uploads',
     staticDir: process.env.UPLOAD_DIR,
   },
-  collections: [MediaAsset, Tag],
+  collections: [User, MediaAsset, Tag],
   admin: {
     user: 'users',
   },
