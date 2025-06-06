@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  payload:
+    image: node:18
+    working_dir: /app
+    volumes:
+      - ./payload:/app/payload
+      - ./uploads:/uploads
+      - ./node_modules:/app/node_modules
+    environment:
+      - PAYLOAD_CONFIG_PATH=/app/payload/payload.config.js
+      - PAYLOAD_SECRET=${PAYLOAD_SECRET}
+      - MONGODB_URI=${MONGODB_URI}
+      - UPLOAD_DIR=${UPLOAD_DIR}
+      - PORT=${PORT}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    ports:
+      - "3000:3000"
+    command: sh -c "node /app/payload/server.js"
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:6
+    volumes:
+      - ./db:/data/db
+    restart: unless-stopped
+
+volumes:
+  uploads:
+  db:
