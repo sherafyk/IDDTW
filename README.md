@@ -47,6 +47,11 @@ The `.env` file includes:
 - `MONGODB_URI` - MongoDB connection string
 - `UPLOAD_DIR` - directory for uploaded files
 - `PORT` - port for the Payload server
+- `SERVER_URL` - full base URL of the Payload server used in `payload.config.js`
+
+`SERVER_URL` should reflect the address clients use to reach Payload. When
+running locally it can remain `http://localhost:3000`, but in production set it
+to the public URL behind your reverse proxy.
 
 If `OPENAI_API_KEY` is not provided, the AI enrichment service returns default values without contacting OpenAI (titles and alt text will be `null` and tags will be an empty array).
 
