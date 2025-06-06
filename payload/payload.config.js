@@ -15,7 +15,7 @@ module.exports = {
   // The base URL where this server is reachable. Defaults to localhost for
   // development but can be overridden via environment variable for production
   // deployments or when behind a reverse proxy.
-  serverURL: process.env.SERVER_URL,
+  serverURL: process.env.SERVER_URL || 'http://localhost:3000',
 
   // Configure local file uploads. Files are served from `/uploads` and the
   // directory is passed via env to allow Docker volume mounting.
