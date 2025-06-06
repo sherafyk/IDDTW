@@ -14,7 +14,6 @@ This repository provides a dockerized Payload CMS setup with an AI enrichment pi
    npm install       # or `pnpm install`
    cp .env.example .env
    # edit .env with your secrets
-   npm install
    docker compose up -d
    ```
 2. Access the admin panel at `http://localhost:3000/admin`.
