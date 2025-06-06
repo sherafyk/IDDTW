@@ -13,11 +13,23 @@ This repository provides a dockerized Payload CMS setup with an AI enrichment pi
    cd <repo>
    npm install       # or `pnpm install`
    cp .env.example .env
-   # edit .env with your secrets
+   # open `.env` in your editor and fill in the values from the section below
+   ```
+2. Build the Docker images and start the stack:
+   ```bash
+   docker compose build
    docker compose up -d
    ```
-2. Access the admin panel at `http://localhost:3000/admin`.
-3. When prompted, create the initial user by entering an email and password.
+3. Access the admin panel at `http://localhost:3000/admin`.
+4. When prompted, create the initial user by entering an email and password.
+
+### Local Development
+
+To run Payload directly on your machine without Docker, start the server with:
+
+```bash
+npm run dev
+```
 
 ## Environment Variables
 
