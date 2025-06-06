@@ -1,20 +1,27 @@
-# Codex Task: Build Payload CMS Digital Asset Management System
+# Codex Task: Build Payload CMS AI-Enhanced Digital Asset Management System (Sheraf Payload Stack v1)
+
+---
 
 ## Context
 
-I am building a professional AI-enhanced Digital Asset Management (DAM) system for internal and future SaaS use. This project will be hosted on my VPS (Debian 12, Apache, ISPConfig), and will manage media assets (images, SVG files, Lottie animations, etc) with rich metadata, auto-generated AI titles, alt-text, and tags. The platform should have an elegant interface, highly structured metadata, easy search, download, and linking capabilities. Initially private, but future-ready for user access, subscriptions, and payments.
+I am building a professional, AI-enhanced Digital Asset Management (DAM) system that will serve both internal use and potential future SaaS expansion. This system will manage media assets including images, SVG files, Lottie animations, PDFs, videos, and other media formats. Each asset will be enriched using OpenAI to generate descriptive metadata, alt text, and tags for high retrievability and semantic search.
 
-You are to help me build this system using **Payload CMS**, fully optimized for AI-powered metadata enrichment, future SaaS scalability, and clean code architecture.
+The system will be hosted on my VPS (Debian 12, Apache, ISPConfig), deployed via Docker Compose using a clean GitHub repository that serves as my master deployment source. The frontend will not be built at this time; this phase is strictly focused on building the backend CMS, AI enrichment pipeline, and deployment architecture.
+
+You are tasked to build this full system using Payload CMS, fully optimized for AI-powered enrichment, future SaaS scalability, and clean, modern code architecture.
 
 ---
 
 ## Build Constraints & Environment
 
-* VPS with Debian 12, Apache, ISPConfig 3.
-* Public web root example path: `/var/www/clients/client0/web4/web/`
-* Payload CMS will run under Docker, reverse proxied by Apache.
-* All uploaded assets will initially be stored on local disk (S3 not needed yet).
-* Future SaaS potential: user management, payments, API access.
+* VPS OS: Debian 12
+* Web Server: Apache (ISPConfig-managed)
+* Deployment Flow: Code lives on GitHub, deployed to VPS via `git clone` and `docker compose up -d`.
+* Docker: Fully dockerized stack with isolated containers.
+* Reverse Proxy: Apache will proxy external traffic to Payload container.
+* AI Provider: OpenAI GPT-4o (`https://api.openai.com/v1/chat/completions`)
+* No frontend required at this stage.
+* Clean, scalable repository structure.
 
 ---
 
@@ -22,167 +29,215 @@ You are to help me build this system using **Payload CMS**, fully optimized for 
 
 ---
 
-### Phase 1: Core Payload CMS Deployment
+### Phase 1: Repository Structure & Deployment Foundation
 
-1. **Set up Dockerized Payload CMS on VPS**
+You will generate a fully self-contained GitHub repository with the following structure:
 
-   * Use official Payload CMS Docker instructions:
-
-     * [https://payloadcms.com/docs/production/deployment#docker](https://payloadcms.com/docs/production/deployment#docker)
-   * Docker should be installed on Debian 12 VPS.
-   * Payload instance should run on internal port `18080`.
-   * Apache reverse proxy configuration to expose Payload:
-
-     * For example: `https://assets.mydomain.com` or `https://xaio.org`
-
-2. **File Storage**
-
-   * Use Payload's default local file storage plugin.
-   * Store all uploaded files under:
-
-     * `/var/www/clients/client0/web4/assets/`
-   * Make sure permissions allow Payload Docker container to write to this path.
-   * Structure uploads by date: `/assets/YYYY/MM/DD/filename.ext`
-
-3. **Database**
-
-   * Use MongoDB Docker container.
-   * Either local MongoDB in Docker Compose or external MongoDB Atlas.
-   * Ensure proper Mongo credentials, persistence, backups.
+```bash
+/ (repo root)
+  /payload/            # Payload CMS app files and configurations
+  /services/ai/        # AI enrichment service code
+  /uploads/            # File storage (Docker-mounted volume)
+  /db/                 # MongoDB storage volume
+  docker-compose.yml
+  .env.example
+  package.json
+  README.md
+```
 
 ---
 
-### Phase 2: Payload CMS Schema Design (Collections & Fields)
+### Phase 2: Payload CMS Core Deployment
 
-**Main Collections:**
+1. Initialize Payload CMS app inside `/payload/`.
+2. Admin panel accessible at `/admin` route.
+3. Payload secret, database URI, and file upload paths should be environment-variable driven.
+4. Expose Payload CMS internally on Docker port `3000`.
 
-#### MediaAsset (Primary Collection)
+#### File Upload Storage
 
-| Field         | Type                                          | Notes                                  |
-| ------------- | --------------------------------------------- | -------------------------------------- |
-| `title`       | Text                                          | Auto-generated, editable               |
-| `description` | Textarea                                      | Optional manual description            |
-| `file`        | Upload                                        | Payload file upload                    |
-| `altText`     | Text                                          | AI-generated alt text                  |
-| `tags`        | Relationship (Many-to-Many to Tag Collection) | AI-generated tags                      |
-| `fileType`    | Select                                        | Enum: Image, SVG, Lottie, Video, Other |
-| `source`      | URL                                           | Optional original source link          |
-| `uploadedBy`  | User reference                                | Internal user system                   |
-| `createdAt`   | Auto Timestamp                                |                                        |
-| `updatedAt`   | Auto Timestamp                                |                                        |
+* Use Payload’s built-in local file storage adapter.
+* Store files under `/uploads/` (Docker-mounted volume).
+* Structure uploaded files by date: `/uploads/YYYY/MM/DD/filename.ext`.
 
-#### Tag (Secondary Collection)
+#### Docker Compose Deployment
 
-| Field  | Type                  | Notes            |
-| ------ | --------------------- | ---------------- |
-| `name` | Text                  | Unique tag label |
-| `slug` | Text (Auto-generated) | URL safe         |
+* Docker Compose should define:
 
----
+  * Payload CMS container
+  * MongoDB container
+* Docker volumes for:
 
-### Phase 3: AI Metadata Enrichment Pipeline
+  * File uploads: `./uploads:/uploads`
+  * MongoDB: `./db:/data/db`
 
-1. **Hook Trigger**
+#### Apache Reverse Proxy
 
-   * On successful asset upload (after file stored), trigger Payload `afterChange` hook.
+* Codex does not need to build Apache config, but include example config in README.md:
 
-2. **AI Tasks (Using OpenAI API):**
-
-   * Generate:
-
-     * Title
-     * Alt text
-     * Descriptive tags (10 max)
-
-3. **API Prompts:**
-
-   * Title Prompt:
-
-     > You are a content metadata generator. Given this file name and basic info, create a short, descriptive professional title suitable for digital asset libraries.
-   * Alt Text Prompt:
-
-     > You are an alt text generator. Write accurate, ADA-compliant alt text for this file.
-   * Tag Prompt:
-
-     > You are a tagging system. Generate 5-10 highly relevant tags describing this media file for search purposes.
-
-4. **Store Outputs**
-
-   * Inject AI responses into Payload collection fields automatically via hook update.
-
-5. **Safe Overrides**
-
-   * Allow manual editing of AI fields after upload.
+```apache
+<VirtualHost *:443>
+    ServerName xaio.org
+    ProxyPass / http://localhost:3000/
+    ProxyPassReverse / http://localhost:3000/
+</VirtualHost>
+```
 
 ---
 
-### Phase 4: Elegant Frontend Interface (Admin-Only for Now)
+### Phase 3: Payload CMS Schema Design (Collections & Fields)
 
-* Use Payload's built-in Admin UI for private internal access.
-* Ensure Admin UI is fully operational via reverse proxy over HTTPS.
-* No public frontend needed at this stage.
+#### Primary Collection: MediaAsset
+
+| Field         | Type                                          | Notes                                       |
+| ------------- | --------------------------------------------- | ------------------------------------------- |
+| `title`       | Text                                          | AI-generated, editable                      |
+| `description` | Textarea                                      | Optional manual field                       |
+| `file`        | Upload                                        | File storage                                |
+| `altText`     | Text                                          | AI-generated alt text                       |
+| `tags`        | Relationship (many-to-many to Tag collection) | AI-generated tags                           |
+| `fileType`    | Select                                        | Enum: Image, SVG, Lottie, Video, PDF, Other |
+| `source`      | URL                                           | Optional original source                    |
+| `uploadedBy`  | User reference                                | Internal user model                         |
+| `createdAt`   | Auto Timestamp                                |                                             |
+| `updatedAt`   | Auto Timestamp                                |                                             |
+
+#### Secondary Collection: Tag
+
+| Field  | Type | Notes                        |
+| ------ | ---- | ---------------------------- |
+| `name` | Text | Unique label                 |
+| `slug` | Text | Auto-generated URL-safe slug |
+
+---
+
+### Phase 4: AI Metadata Enrichment Pipeline
+
+#### Hook Logic
+
+* Use Payload’s `afterChange` hook on MediaAsset collection.
+* Trigger enrichment only on new file uploads or when file is changed.
+* Enrichment fields: title, alt text, tags.
+
+#### OpenAI Integration
+
+* Use OpenAI `chat/completions` API with model `gpt-4o`.
+* Base URL: `https://api.openai.com/v1/chat/completions`
+* Use `temperature: 0.7` to balance creativity with consistency.
+* Load OpenAI API key from environment variable `OPENAI_API_KEY`.
+
+#### Prompt Design
+
+##### Title Prompt:
+
+> You are a content metadata generator. Given a file name and basic info, create a short, professional, descriptive title suitable for a digital asset library.
+
+##### Alt Text Prompt:
+
+> You are an alt text generator. Write ADA-compliant alt text for this file that accurately describes the content for visually impaired users.
+
+##### Tag Prompt:
+
+> You are a tagging system. Generate 5-10 highly relevant search tags describing this media file.
+
+#### AI Code Structure
+
+* Create a dedicated AI service module: `/services/ai/aiService.js`
+* Export separate async functions:
+
+  * `generateTitle()`
+  * `generateAltText()`
+  * `generateTags()`
+* Functions should be easily reusable and accept the filename and any available metadata.
+* Handle OpenAI API requests cleanly with error handling, retries, and token limits.
+* Insert enrichment results directly into Payload fields via hook update.
+
+#### Safe Overrides
+
+* Admin should be able to manually edit AI-generated fields after upload.
 
 ---
 
 ### Phase 5: SaaS Readiness Architecture
 
-* Keep multi-user system structure:
+* Build backend using best-practice modular design to enable:
 
-  * Admins
-  * Uploaders
-  * Read-only users
-* Implement role-based access control using Payload’s built-in Access Control.
-* Future Stripe integration via Payload plugin for SaaS paywall.
+  * Role-based access control (admins, uploaders, read-only users)
+  * Future subscription models (Stripe integration via Payload plugin)
+  * External API endpoints for public consumption.
+* Structure code for future integrations but do not build frontend or SaaS billing system yet.
 
 ---
 
-### Phase 6 (Optional Future Expansion - not for immediate build)
+### Phase 6 (Optional Future Expansion — Not for This Build)
 
-* Add CDN offload for file delivery.
-* Build public-facing Next.js or Astro frontend.
-* Add search powered by vector embeddings (OpenAI ADA or Claude embeddings) for highly semantic search.
-* Build REST API endpoints for partner integrations.
+* Add CDN offload for serving large files.
+* Build public-facing frontend (Next.js or Astro) that consumes Payload API.
+* Build semantic search using vector embeddings (OpenAI ADA or Claude embeddings).
+* REST API for partner integrations.
+* User SaaS billing model using Stripe plugins.
 
 ---
 
 ## Deliverables to Generate
 
-1. Docker Compose file for VPS deployment.
-2. Payload CMS schema for MediaAsset and Tag collections.
-3. Payload CMS backend hooks (Node.js) for AI enrichment.
-4. Apache reverse proxy config for Payload Docker container.
-5. API integration for OpenAI / Claude calls.
-6. Documentation for all of the above.
+* Fully functional GitHub repository per structure above.
+* Complete Payload CMS initialization.
+* Clean Docker Compose deployment.
+* Full schema definitions for `MediaAsset` and `Tag` collections.
+* AI enrichment hook code integrated with Payload lifecycle.
+* OpenAI API service module.
+* `.env.example` file to document required variables.
+* README.md with full deployment instructions.
+* Apache reverse proxy example configuration.
+
+---
+
+## Example Environment File (.env.example)
+
+```env
+OPENAI_API_KEY=your-openai-api-key
+PAYLOAD_SECRET=your-payload-secret
+MONGODB_URI=mongodb://mongo:27017/payload
+UPLOAD_DIR=/uploads
+PORT=3000
+```
+
+---
+
+## Deployment Flow (for README.md)
+
+```bash
+git clone <repo_url>
+cd <repo>
+cp .env.example .env
+# Edit .env and add your secrets
+docker compose up -d
+```
 
 ---
 
 ## Key Notes for Codex
 
-* Prioritize clean code, modular functions, and clear separation of config variables.
-* Ensure database credentials, API keys, and file paths are handled via environment variables for security.
-* Design backend code so that AI enrichment hooks are self-contained and easy to update.
-* Codebase should be deployment-ready to VPS file paths as described.
-
----
-
-## Example File Paths (VPS context for ISPConfig deployment)
-
-| Purpose                              | Path Example                                    |
-| ------------------------------------ | ----------------------------------------------- |
-| Web Root (reverse proxy points here) | `/var/www/clients/client0/web4/web`             |
-| Upload Storage                       | `/var/www/clients/client0/web4/assets/`         |
-| Docker Compose Location              | `/var/www/clients/client0/web4/payload-docker/` |
+* Code must be modular, maintainable, and cleanly separated.
+* All credentials and file paths controlled via `.env`.
+* Use best-practice API call structure with clean retries and error handling.
+* All file paths inside Docker context — avoid direct VPS hardcoded paths.
+* Assume the user is experienced and capable of VPS management.
+* Do not include any frontend UI code.
+* Do not generate SaaS payment logic yet.
+* Build for long-term maintainability.
 
 ---
 
 ## Bonus Context
 
-* Assume I am technically capable but looking for best practice design patterns.
-* Future maintainability and SaaS expansion matter.
-* Keep AI prompt engineering easily editable for future tuning.
+* The system will ultimately serve as a core SaaS platform for media asset licensing.
+* Scalability, data integrity, and AI extensibility are mission critical.
+* Design architecture as if this system could evolve into a commercial-grade SaaS offering.
+* Simplicity + extensibility is prioritized.
+* Codex should optimize for industry-grade engineering standards.
 
 ---
 
 # End of Instructions
-
----
