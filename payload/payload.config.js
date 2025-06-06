@@ -12,7 +12,10 @@ module.exports = {
   // Expose Payload on a configurable URL. When running in Docker the port
   // will be injected via the environment so this works both locally and in
   // production.
-  serverURL: `http://localhost:${process.env.PORT || 3000}`,
+  // The base URL where this server is reachable. Defaults to localhost for
+  // development but can be overridden via environment variable for production
+  // deployments or when behind a reverse proxy.
+  serverURL: process.env.SERVER_URL,
 
   // Configure local file uploads. Files are served from `/uploads` and the
   // directory is passed via env to allow Docker volume mounting.
