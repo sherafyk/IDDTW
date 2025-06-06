@@ -1,4 +1,5 @@
 const path = require('path');
+const { slugify } = require('transliteration');
 const { generateTitle, generateAltText, generateTags } = require('../../services/ai/aiService');
 
 module.exports = {
@@ -59,13 +60,32 @@ module.exports = {
           generateTags(filename),
         ]);
 
+        const tagIds = [];
+        for (const tagName of tags) {
+          const slug = slugify(tagName);
+          const existing = await req.payload.find({
+            collection: 'tags',
+            where: { slug: { equals: slug } },
+          });
+          let tagDoc;
+          if (existing && existing.docs && existing.docs.length) {
+            tagDoc = existing.docs[0];
+          } else {
+            tagDoc = await req.payload.create({
+              collection: 'tags',
+              data: { name: tagName },
+            });
+          }
+          tagIds.push(tagDoc.id);
+        }
+
         await req.payload.update({
           collection: 'media-assets',
           id: doc.id,
           data: {
             title: doc.title || title,
             altText: doc.altText || altText,
-            tags: doc.tags && doc.tags.length ? doc.tags : tags.map((t) => ({ name: t })),
+            tags: doc.tags && doc.tags.length ? doc.tags : tagIds,
           },
         });
       }
