@@ -1,4 +1,4 @@
-# Codex Task: Build Payload CMS AI-Enhanced Digital Asset Management System (Sheraf Payload Stack v1)
+# Codex Task 1: Build Payload CMS AI-Enhanced Digital Asset Management System (Sheraf Payload Stack v1)
 
 ---
 
@@ -240,4 +240,195 @@ docker compose up -d
 
 ---
 
-# End of Instructions
+# End of Instructions for Codex Task 1
+
+---
+---
+---
+
+# Codex Task 2: Build Frontend Scaffold for Payload CMS Digital Asset Management (Sheraf Payload Stack v2 — Public Frontend)
+
+---
+
+## Context
+
+You are tasked to build the full frontend scaffold for my AI-enhanced Digital Asset Management (DAM) system, using Payload CMS as the backend (already deployed via Docker as Phase 1). The frontend will serve as the public-facing `xaio.org` website for browsing, searching, filtering, and viewing digital media assets.
+
+This scaffold will consume data exclusively from Payload CMS’s REST API endpoints via secure HTTPS calls. You are not responsible for any backend code or Payload hooks in this task — strictly the frontend build scaffold.
+
+---
+
+## Stack Selection
+
+* Frontend Framework: Next.js (latest LTS)
+* Styling: Tailwind CSS
+* Deployment-Ready for:
+
+  * Vercel (preferred)
+  * or self-hosted on VPS reverse proxy (future option)
+* Strictly frontend — decoupled from backend hosting.
+* API Source: Payload CMS REST API
+
+---
+
+## API Endpoint Reference
+
+* Payload CMS API Base URL: `https://api.xaio.org/api/`
+* MediaAsset Collection API: `https://api.xaio.org/api/media-assets`
+* Tag Collection API: `https://api.xaio.org/api/tags`
+* Auth: Start fully public for read-only access. (No JWT auth yet.)
+
+---
+
+## Core Features to Scaffold
+
+### 1️⃣ Landing Page (`/`)
+
+* Clean professional homepage.
+* Brief system intro text placeholder.
+* Call-to-action to browse the asset library.
+* Minimalistic modern aesthetic.
+
+### 2️⃣ Media Library Browser (`/library`)
+
+* Paginated list view of MediaAssets.
+* Display:
+
+  * Thumbnail (from file)
+  * Title
+  * FileType label
+  * Tags (as clickable chips)
+* Clicking a tag filters by that tag.
+
+### 3️⃣ Media Detail View (`/library/[id]`)
+
+* Display full asset details:
+
+  * Full preview (image, svg, video player, pdf viewer where applicable)
+  * Title
+  * Description
+  * AltText
+  * Tags (clickable)
+  * Source URL (if present)
+  * Download button
+
+### 4️⃣ Tag Browser (`/tags`)
+
+* List all tags.
+* Clicking a tag links to `/library?tag=selectedtag`.
+
+### 5️⃣ Search Bar (Global Header)
+
+* Simple text-based search querying:
+
+  * Title
+  * Description
+  * Tags
+* Use query params to pass search state (`/library?search=...`).
+
+---
+
+## Data Fetching
+
+* Use Next.js native data fetching (preferably `getServerSideProps` or `app router` if using Next 13+).
+* Use Axios or native fetch to call Payload CMS API endpoints.
+* Build reusable API wrapper layer inside `/lib/api.js` to simplify all Payload API calls.
+* Handle API errors gracefully.
+* Pagination parameters via query params.
+
+---
+
+## Visual Styling & UI Components
+
+* Use Tailwind CSS for all layouts.
+* Use component-based structure:
+
+  * `components/Header.js`
+  * `components/Footer.js`
+  * `components/AssetCard.js`
+  * `components/SearchBar.js`
+  * `components/TagChip.js`
+* Create basic responsive design — mobile-friendly.
+* Use placeholder logo & colors.
+
+---
+
+## Project Structure
+
+```bash
+/ (repo root)
+  /components/
+  /pages/
+    index.js
+    /library/
+      index.js
+      [id].js
+    /tags/
+      index.js
+  /lib/
+    api.js
+  /public/
+    /logo/ (placeholder logos, favicon)
+  tailwind.config.js
+  package.json
+  .env.local.example
+  README.md
+```
+
+---
+
+## Environment Variables
+
+Provide a `.env.local.example`:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=https://api.xaio.org/api
+```
+
+---
+
+## Deployment Preparation
+
+* Fully compatible with Vercel deployment.
+* Build clean SSR + static hybrid output.
+* Future: can move to VPS hosting if desired.
+
+---
+
+## SaaS-Readiness Architecture
+
+* Build scaffold so that future versions can easily add:
+
+  * User authentication
+  * Subscription billing (Stripe)
+  * Private asset access by user role
+  * Favorites / collections per user
+  * Usage tracking
+  * AI-powered semantic search
+
+---
+
+## Key Notes for Codex
+
+* You are building scaffold code that will serve as v1 frontend.
+* This is not a UI mockup; full production-grade React+Next.js code.
+* Keep code modular, maintainable, and scalable.
+* Follow Next.js best practices.
+* Build for clean maintainability: clear component folders, API wrappers, reusable layouts.
+* Build for long-term SaaS extensibility.
+* Prioritize high code quality.
+* No backend code is needed — only frontend API calls.
+* No payment system required yet.
+
+---
+
+## Bonus Context
+
+* This frontend will serve as public storefront for AI-powered searchable media assets.
+* SaaS expansion is planned; clean code now saves time later.
+* Assume the backend Payload CMS is fully deployed, functioning, and accessible via public API.
+
+---
+
+# End of Instructions for Codex Task 2
+
