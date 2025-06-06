@@ -60,3 +60,7 @@ If `OPENAI_API_KEY` is not provided, the AI enrichment service returns default v
 ```
 
 Uploads are stored under the `uploads/` directory and MongoDB data under `db/`.
+
+## License
+
+This project is licensed under the ISC License. See [LICENSE](LICENSE) for details.
