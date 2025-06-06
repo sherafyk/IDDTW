@@ -17,6 +17,7 @@ services:
       - UPLOAD_DIR=${UPLOAD_DIR}
       - PORT=${PORT}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - SERVER_URL=${SERVER_URL}
     ports:
       - "3000:3000"
     command: sh -c "node /app/payload/server.js"
