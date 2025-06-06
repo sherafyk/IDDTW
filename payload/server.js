@@ -1,7 +1,6 @@
 // Load environment variables so the server can be configured via `.env` files.
 require('dotenv').config();
 
-const path = require('path');
 const express = require('express');
 const payload = require('payload');
 
