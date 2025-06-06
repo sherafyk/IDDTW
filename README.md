@@ -66,6 +66,17 @@ If `OPENAI_API_KEY` is not provided, the AI enrichment service returns default v
 
 Uploads are stored under the `uploads/` directory and MongoDB data under `db/`.
 
+## Rebuilding Indexes
+
+If you add or change fields with `index: true`, MongoDB will rebuild the indexes
+when Payload starts. Simply restart the server to apply changes:
+
+```bash
+docker compose restart payload
+```
+
+After the container restarts, Payload will recreate any modified indexes.
+
 ## License
 
 This project is licensed under the ISC License. See [LICENSE](LICENSE) for details.

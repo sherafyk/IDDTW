@@ -22,6 +22,7 @@ module.exports = {
       type: 'text',
       required: true,
       unique: true,
+      index: true,
       hooks: {
         beforeValidate: [({ data }) => {
           // Automatically compute the slug whenever the name changes.
