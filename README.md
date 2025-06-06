@@ -16,6 +16,7 @@ This repository provides a dockerized Payload CMS setup with an AI enrichment pi
    docker compose up -d
    ```
 2. Access the admin panel at `http://localhost:3000/admin`.
+3. When prompted, create the initial user by entering an email and password.
 
 ## Apache Reverse Proxy Example
 ```apache
