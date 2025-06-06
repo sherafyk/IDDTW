@@ -5,7 +5,7 @@
   "main": "payload/server.js",
   "scripts": {
     "start": "node payload/server.js",
-    "lint": "eslint payload services"
+    "lint": "eslint -c .eslintrc.json payload services"
   },
   "keywords": [],
   "author": "",
