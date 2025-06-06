@@ -6,13 +6,28 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-async function callChat(messages) {
-  const res = await openai.createChatCompletion({
-    model: 'gpt-4o',
-    temperature: 0.7,
-    messages,
-  });
-  return res.data.choices[0].message.content.trim();
+const MAX_TOKENS = parseInt(process.env.OPENAI_MAX_TOKENS || '60', 10);
+const RETRY_LIMIT = parseInt(process.env.OPENAI_RETRIES || '3', 10);
+
+async function callChat(messages, retries = RETRY_LIMIT) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const res = await openai.createChatCompletion({
+        model: 'gpt-4o',
+        temperature: 0.7,
+        max_tokens: MAX_TOKENS,
+        messages,
+      });
+      return res.data.choices[0].message.content.trim();
+    } catch (error) {
+      if (attempt === retries) {
+        console.error('OpenAI API request failed:', error);
+        throw error;
+      }
+      const delay = Math.min(1000 * 2 ** (attempt - 1), 16000);
+      await new Promise((res) => setTimeout(res, delay));
+    }
+  }
 }
 
 async function generateTitle(filename) {
