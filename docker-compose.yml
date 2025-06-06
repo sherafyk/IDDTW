@@ -4,13 +4,12 @@ version: '3.8'
 # to start both containers.
 services:
   payload:
-    image: node:18
+    build: .
     working_dir: /app
     volumes:
       # Mount the application code and uploads directory so changes persist
       - ./payload:/app/payload
       - ./uploads:/uploads
-      - ./node_modules:/app/node_modules
     environment:
       - PAYLOAD_CONFIG_PATH=/app/payload/payload.config.js
       - PAYLOAD_SECRET=${PAYLOAD_SECRET}

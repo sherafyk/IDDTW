@@ -7,17 +7,26 @@ This repository provides a dockerized Payload CMS setup with an AI enrichment pi
 - Node.js (for local development)
 
 ## Setup
-1. Clone the repository and install dependencies:
+1. Clone the repository:
    ```bash
    git clone <repo_url>
    cd <repo>
+   ```
+2. (Optional) Install dependencies locally if you plan to run without Docker:
+   ```bash
    npm install       # or `pnpm install`
+   ```
+3. Copy the example environment file and add your secrets:
+   ```bash
    cp .env.example .env
    # edit .env with your secrets
-   docker compose up -d
    ```
-2. Access the admin panel at `http://localhost:3000/admin`.
-3. When prompted, create the initial user by entering an email and password.
+4. Build the Payload image and start the stack:
+   ```bash
+   docker compose up -d --build
+   ```
+5. Access the admin panel at `http://localhost:3000/admin`.
+6. When prompted, create the initial user by entering an email and password.
 
 ## Environment Variables
 
