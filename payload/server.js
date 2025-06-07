@@ -2,7 +2,11 @@
 require('dotenv').config();
 
 const express = require('express');
-const payload = require('payload');
+const path = require('path');
+// When using Payload with CommonJS, the default export lives on the `default`
+// property. Without accessing `.default`, `payload.init` would be undefined and
+// the server would crash on startup.
+const payload = require('payload').default;
 
 // Create the Express app which Payload will hook into.
 const app = express();
@@ -13,8 +17,16 @@ const app = express();
 app.set('trust proxy', 1);
 
 const start = async () => {
+  // Ensure the config file path is set so Payload knows where to load its
+  // configuration from when running directly via Node.
+  const configPath = path.join(__dirname, 'payload.config.js');
+  if (!process.env.PAYLOAD_CONFIG_PATH) {
+    process.env.PAYLOAD_CONFIG_PATH = configPath;
+  }
+
   // Initialise Payload and connect it to our Express instance.
   await payload.init({
+    config: configPath,
     secret: process.env.PAYLOAD_SECRET,
     mongoURL: process.env.MONGODB_URI,
     express: app,
