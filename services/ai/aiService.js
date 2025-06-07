@@ -61,7 +61,12 @@ async function generateTags(filename) {
   if (!openai) return [];
   const prompt = `You are a tagging system. Generate 5-10 highly relevant search tags describing this media file: ${filename}`;
   const tagsString = await callChat([{ role: 'user', content: prompt }]);
-  return tagsString.split(/,|\n/).map(t => t.trim()).filter(Boolean);
+  const tags = tagsString
+    .split(/,|\n/)
+    .map((t) => t.trim())
+    .filter(Boolean);
+  // Remove duplicates to avoid creating the same tag multiple times
+  return [...new Set(tags)];
 }
 
 module.exports = { generateTitle, generateAltText, generateTags };
