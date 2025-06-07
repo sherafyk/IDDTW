@@ -8,6 +8,14 @@ module.exports = {
 
   timestamps: true,
 
+  // Allow public read access while limiting writes to authenticated users
+  access: {
+    read: () => true,
+    create: ({ req }) => !!req.user,
+    update: ({ req }) => !!req.user,
+    delete: ({ req }) => !!req.user,
+  },
+
   fields: [
     {
       // Human readable name of the tag
