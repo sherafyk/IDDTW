@@ -14,6 +14,14 @@ module.exports = {
   // Enable createdAt/updatedAt timestamps
   timestamps: true,
 
+  // Restrict writes to authenticated users while allowing public read access
+  access: {
+    read: () => true,
+    create: ({ req }) => !!req.user,
+    update: ({ req }) => !!req.user,
+    delete: ({ req }) => !!req.user,
+  },
+
   // Configure Payload's built-in upload handler
   upload: {
     staticDir: process.env.UPLOAD_DIR,
