@@ -9,8 +9,8 @@ This repository provides a dockerized Payload CMS setup with an AI enrichment pi
 ## Setup
 1. Clone the repository:
    ```bash
-   git clone <repo_url>
-   cd <repo>
+   git clone https://github.com/sherafyk/IDDTW.git
+   cd IDDTW
    ```
 2. (Optional) Install dependencies locally if you plan to run without Docker:
    ```bash
