@@ -1,8 +1,11 @@
 // Load environment variables so the server can be configured via `.env` files.
-require('dotenv').config();
-
-const express = require('express');
+// Resolve the `.env` path relative to this file so that it works regardless
+// of the working directory (e.g. when running inside Docker).
 const path = require('path');
+require('dotenv').config({
+  path: path.resolve(__dirname, '../.env'),
+});
+const express = require('express');
 // Dynamically import the ESM build of Payload. Using a dynamic import allows
 // this file to remain CommonJS while loading the module.
 const loadPayload = async () => (await import('payload')).default;
