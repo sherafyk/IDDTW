@@ -7,8 +7,7 @@
     "start": "node payload/server.js",
     "dev": "next dev",
     "build": "next build",
-    "start:frontend": "next start",
-    "lint": "eslint -c .eslintrc.cjs payload services"
+    "start:frontend": "next start"
   },
   "keywords": [],
   "author": "",
@@ -27,8 +26,5 @@
     "tailwindcss": "^3.4.3",
     "postcss": "^8.4.31",
     "autoprefixer": "^10.4.17"
-  },
-  "devDependencies": {
-    "eslint": "^8.57.1"
   }
 }
