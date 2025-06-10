@@ -1,7 +1,6 @@
 // Utilities for working with file paths and generating URL friendly slugs.
 const path = require('path');
 const { slugify } = require('transliteration');
-const payload = require('payload');
 
 // Custom AI helpers used to enrich uploaded media with metadata. The service
 // wraps OpenAI calls to produce titles, alt text and tags for a file.
@@ -135,8 +134,12 @@ module.exports = {
             },
           });
         } catch (err) {
-          if (payload.logger && typeof payload.logger.error === 'function') {
-            payload.logger.error('AI enrichment failed', err);
+          if (
+            req.payload &&
+            req.payload.logger &&
+            typeof req.payload.logger.error === 'function'
+          ) {
+            req.payload.logger.error('AI enrichment failed', err);
           } else {
             console.error('AI enrichment failed', err);
           }
