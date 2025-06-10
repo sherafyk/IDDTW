@@ -3,10 +3,9 @@ require('dotenv').config();
 
 const express = require('express');
 const path = require('path');
-// When using Payload with CommonJS, the default export lives on the `default`
-// property. Without accessing `.default`, `payload.init` would be undefined and
-// the server would crash on startup.
-const payload = require('payload').default;
+// Dynamically import the ESM build of Payload. Using a dynamic import allows
+// this file to remain CommonJS while loading the module.
+const loadPayload = async () => (await import('payload')).default;
 
 // Create the Express app which Payload will hook into.
 const app = express();
@@ -17,6 +16,7 @@ const app = express();
 app.set('trust proxy', 1);
 
 const start = async () => {
+  const payload = await loadPayload();
   // Ensure the config file path is set so Payload knows where to load its
   // configuration from when running directly via Node.
   const configPath = path.join(__dirname, 'payload.config.js');
